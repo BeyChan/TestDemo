@@ -76,7 +76,6 @@ final class SearchViewModel {
 
         do {
             logger.info("Searching for: \(name)")
-            print("[Search] page: \(page), pattern: \(pattern)")
             let data = try await service.fetch(SpeciesData.self, query: GraphQLQueries.searchSpecies, variables: vars)
             let species = data.species ?? []
             let count = data.speciesAggregate?.aggregate?.count ?? 0
@@ -93,9 +92,7 @@ final class SearchViewModel {
             logger.info("Found \(species.count) species, total: \(count)")
         } catch {
             logger.error("Search error: \(error.localizedDescription)")
-            print("[Search] error: \(error)")
             if !Task.isCancelled, page == 0 {
-                // FIXME: 现在所有错误都显示 unknown，应该区分网络超时和解析错误
                 pageState = .failure(ViewError.unknown)
             }
         }

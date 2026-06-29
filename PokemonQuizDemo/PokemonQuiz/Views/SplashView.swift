@@ -64,7 +64,6 @@ struct SplashView: View {
     private func enter() {
         guard !hasEntered else { return }
         hasEntered = true
-        print("[Splash] enter app")
         onEnter()
     }
 }

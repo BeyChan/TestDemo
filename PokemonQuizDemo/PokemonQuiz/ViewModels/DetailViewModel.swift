@@ -22,7 +22,6 @@ final class DetailViewModel {
         let vars: [String: GraphQLVariable] = ["name": .string(pokemonName)]
 
         do {
-            print("[Detail] loading: \(pokemonName)")
             let data = try await service.fetch(PokemonDetailData.self, query: GraphQLQueries.getPokemon, variables: vars)
             if let pokemon = data.pokemons?.first {
                 pageState = .success(pokemon)
@@ -30,7 +29,6 @@ final class DetailViewModel {
                 pageState = .empty
             }
         } catch {
-            print("[Detail] error: \(error)")
             pageState = .failure(ViewError.unknown)
         }
     }
