@@ -46,6 +46,18 @@ struct L10n {
 
     var abilities: String { t("detail.abilities") }
     var noAbilities: String { t("detail.no_abilities") }
+    var height: String { t("detail.height") }
+    var weight: String { t("detail.weight") }
+    var types: String { t("detail.types") }
+    var color: String { t("detail.color") }
+
+    func heightValue(_ decimetres: Int) -> String {
+        String(format: t("detail.height_value"), decimetres, Double(decimetres) / 10)
+    }
+
+    func weightValue(_ hectograms: Int) -> String {
+        String(format: t("detail.weight_value"), hectograms, Double(hectograms) / 10)
+    }
 
     var themeSystem: String { t("theme.system") }
     var themeLight: String { t("theme.light") }

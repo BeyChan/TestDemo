@@ -7,10 +7,14 @@
 //
 
 import SwiftUI
+// 加nonisolated消除警告
+nonisolated protocol GraphQLServicing: AnyObject {
+    func fetch<T: Decodable>(_ type: T.Type, query: String, variables: [String: GraphQLVariable]?) async throws -> T
+}
 
-class GraphQLService {
+nonisolated class GraphQLService: GraphQLServicing {
 
-    static let shared = GraphQLService()
+    nonisolated static let shared = GraphQLService()
 
     private let endpoint = URL(string: "https://beta.pokeapi.co/graphql/v1beta")!
 
@@ -24,27 +28,39 @@ class GraphQLService {
         let body = GraphQLRequest(query: query, variables: variables)
         request.httpBody = try JSONEncoder().encode(body)
 
-        print("[GraphQL] request: \(query.prefix(30))... vars: \(variables ?? [:])")
+        Log.info("request: \(query.prefix(30))... vars: \(variables ?? [:])")
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            print("[GraphQL] bad response: \(response)")
+        guard let http = response as? HTTPURLResponse else {
+            Log.error("badServerResponse")
             throw GraphQLServiceError.badServerResponse
         }
+        Log.info("\(http.statusCode) | \(data.count) bytes")
+
+        guard http.statusCode == 200 else {
+            Log.error("badServerResponse http statusCode: \(http.statusCode)")
+            throw GraphQLServiceError.badServerResponse
+        }
+
+        let rawJSON = String(data: data, encoding: .utf8) ?? ""
+        Log.debug("response: \(rawJSON)")
+
         let envelope = try JSONDecoder().decode(GraphQLResponseEnvelope<T>.self, from: data)
         if let errors = envelope.errors, !errors.isEmpty {
-            print("[GraphQL] errors: \(errors.map(\.message))")
+            Log.error("errors: \(errors.map(\.message))")
             throw GraphQLServiceError.graphQLErrors(errors.map(\.message))
         }
-        guard let result = envelope.data else {
+        guard envelope.data != nil else {
+            let raw = String(String(data: data, encoding: .utf8)?.prefix(300) ?? "")
+            Log.error("no data, raw: \(raw)")
             throw GraphQLServiceError.cannotParseResponse
         }
-        return result
+        return envelope.data!
     }
 }
 
-private struct GraphQLResponseEnvelope<T: Decodable>: Decodable {
+private nonisolated struct GraphQLResponseEnvelope<T: Decodable>: Decodable {
     let data: T?
     let errors: [GraphQLError]?
 }

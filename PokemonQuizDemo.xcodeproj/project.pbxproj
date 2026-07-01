@@ -35,6 +35,11 @@
 			path = PokemonQuizDemo;
 			sourceTree = "<group>";
 		};
+		5D5AB0602FEE207400983699 /* PokemonQuizDemoTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PokemonQuizDemoTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				5D5AB02F2FEE207200983699 /* PokemonQuizDemo */,
+				5D5AB0602FEE207400983699 /* PokemonQuizDemoTests */,
 				5D5AB02E2FEE207200983699 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -117,6 +123,9 @@
 			);
 			dependencies = (
 				5D5AB03C2FEE207300983699 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5D5AB0602FEE207400983699 /* PokemonQuizDemoTests */,
 			);
 			name = PokemonQuizDemoTests;
 			packageProductDependencies = (
@@ -445,12 +454,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = J8V9ZG92XT;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = tech.jixun.PokemonQuizDemoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
@@ -467,12 +477,13 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = J8V9ZG92XT;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = tech.jixun.PokemonQuizDemoTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;

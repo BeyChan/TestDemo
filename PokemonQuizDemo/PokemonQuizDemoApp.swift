@@ -18,7 +18,7 @@ struct PokemonQuizDemoApp: App {
     init() {
         let launched = UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
         _showSplash = State(initialValue: !launched)
-        print("App init, hasLaunchedBefore: \(launched)")
+        Log.info("App init, hasLaunchedBefore: \(launched)")
     }
 
     var body: some Scene {

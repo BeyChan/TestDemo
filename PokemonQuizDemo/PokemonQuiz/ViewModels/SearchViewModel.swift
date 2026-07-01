@@ -7,9 +7,6 @@
 //
 
 import SwiftUI
-import os.log
-
-private let logger = Logger(subsystem: "tech.jixun.PokemonQuizDemo", category: "Search")
 
 @MainActor
 @Observable
@@ -20,10 +17,16 @@ final class SearchViewModel {
     var totalCount: Int = 0
 
     let pageSize = 20
+    let debounceInterval: Duration
 
     @ObservationIgnored private var currentPage: Int = 0
     @ObservationIgnored private var searchTask: Task<Void, Never>?
-    @ObservationIgnored private let service = GraphQLService.shared
+    @ObservationIgnored private let service: GraphQLServicing
+
+    init(service: GraphQLServicing = GraphQLService.shared, debounceInterval: Duration = .milliseconds(300)) {
+        self.service = service
+        self.debounceInterval = debounceInterval
+    }
 
     var results: [PokemonSpecies] {
         pageState.data ?? []
@@ -43,8 +46,7 @@ final class SearchViewModel {
         pageState = .loading
 
         searchTask = Task {
-            // 防抖：等待 300ms，试过 500ms 感觉有点慢
-            try? await Task.sleep(for: .milliseconds(300))
+            try? await Task.sleep(for: debounceInterval)
             guard !Task.isCancelled else { return }
 
             await performSearch(name: trimmed, page: 0)
@@ -54,6 +56,8 @@ final class SearchViewModel {
     func loadNextPage() {
         guard !pageState.isLoadingMore, results.count < totalCount else { return }
         let next = currentPage + 1
+        let current = results
+        pageState = .loadingMore(current)
         Task {
             await performSearch(name: query, page: next)
         }
@@ -75,7 +79,7 @@ final class SearchViewModel {
         ]
 
         do {
-            logger.info("Searching for: \(name)")
+            Log.info("Search for: \(name)")
             let data = try await service.fetch(SpeciesData.self, query: GraphQLQueries.searchSpecies, variables: vars)
             let species = data.species ?? []
             let count = data.speciesAggregate?.aggregate?.count ?? 0
@@ -89,9 +93,9 @@ final class SearchViewModel {
                 currentPage = page
             }
             totalCount = count
-            logger.info("Found \(species.count) species, total: \(count)")
+            Log.info("Found \(species.count) species, total: \(count)")
         } catch {
-            logger.error("Search error: \(error.localizedDescription)")
+            Log.error("Search error: \(error.localizedDescription)")
             if !Task.isCancelled, page == 0 {
                 pageState = .failure(ViewError.unknown)
             }

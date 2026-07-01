@@ -41,11 +41,28 @@ enum GraphQLQueries {
       pokemon_v2_pokemon(where: { name: { _eq: $name } }, limit: 1) {
         id
         name
+        height
+        weight
+        pokemon_v2_pokemontypes {
+          pokemon_v2_type {
+            name
+          }
+        }
         pokemon_v2_pokemonabilities {
           id
           pokemon_v2_ability {
             name
           }
+        }
+      }
+    }
+    """
+
+    static let getColor = """
+    query GetColor($name: String!) {
+      pokemon_v2_pokemonspecies(where: { name: { _eq: $name } }, limit: 1) {
+        pokemon_v2_pokemoncolor {
+          name
         }
       }
     }

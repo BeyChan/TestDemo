@@ -10,6 +10,12 @@
 "species.capture_rate" = "Capture rate: %d";
 "detail.abilities" = "Abilities";
 "detail.no_abilities" = "No abilities found";
+"detail.height" = "Height";
+"detail.height_value" = "%d dm (%.1f m)";
+"detail.weight" = "Weight";
+"detail.weight_value" = "%d hg (%.1f kg)";
+"detail.types" = "Types";
+"detail.color" = "Color";
 "theme.system" = "System";
 "theme.light" = "Light";
 "theme.dark" = "Dark";

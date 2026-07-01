@@ -51,14 +51,62 @@ struct PokemonDetailView: View {
             case .success(let mon):
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        HStack {
-                            Text(mon.name.capitalized)
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
-                                .foregroundColor(.primaryText)
-                            Spacer()
+                        if let url = mon.artworkURL {
+                            AsyncImage(url: url) { phase in
+                                switch phase {
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                case .failure:
+                                    Image(systemName: "photo")
+                                        .font(.system(size: 60))
+                                        .foregroundColor(.secondary)
+                                default:
+                                    ProgressView()
+                                }
+                            }
+                            .frame(maxWidth: 240)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 8)
                         }
 
+                        Text(mon.name.capitalized)
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundColor(.primaryText)
+
                         Divider()
+
+                        HStack(spacing: 16) {
+                            infoCard(title: S.height, value: S.heightValue(mon.height))
+                            infoCard(title: S.weight, value: S.weightValue(mon.weight))
+                            if let color = mon.colorName {
+                                infoCard(title: S.color, value: color.capitalized)
+                            }
+                        }
+
+                        let typeNames = mon.types.compactMap { $0.type.name }
+                        if !typeNames.isEmpty {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(S.types)
+                                    .font(.title3)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primaryText)
+
+                                FlowLayout(spacing: 8) {
+                                    ForEach(typeNames, id: \.self) { name in
+                                        Text(name.capitalized)
+                                            .font(.subheadline)
+                                            .padding(.horizontal, 14)
+                                            .padding(.vertical, 7)
+                                            .background(Color.accent.opacity(0.15))
+                                            .clipShape(Capsule())
+                                            .overlay(Capsule().stroke(Color.accent, lineWidth: 1))
+                                            .foregroundColor(.primaryText)
+                                    }
+                                }
+                            }
+                        }
 
                         VStack(alignment: .leading, spacing: 10) {
                             Text(S.abilities)
@@ -100,6 +148,23 @@ struct PokemonDetailView: View {
         .task {
             await vm.load(pokemonName: pokemonName)
         }
+    }
+
+    private func infoCard(title: String, value: String) -> some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Text(value)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.primaryText)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(Color.subtleBg)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

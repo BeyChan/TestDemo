@@ -14,7 +14,12 @@ final class DetailViewModel {
 
     var pageState: ViewState<Pokemon> = .loading
 
-    @ObservationIgnored private let service = GraphQLService.shared
+    // 移除警告
+    @ObservationIgnored private let service: GraphQLServicing
+
+    init(service: GraphQLServicing = GraphQLService.shared) {
+        self.service = service
+    }
 
     func load(pokemonName: String) async {
         pageState = .loading
@@ -23,12 +28,22 @@ final class DetailViewModel {
 
         do {
             let data = try await service.fetch(PokemonDetailData.self, query: GraphQLQueries.getPokemon, variables: vars)
-            if let pokemon = data.pokemons?.first {
-                pageState = .success(pokemon)
-            } else {
+            guard let pokemon = data.pokemons?.first else {
                 pageState = .empty
+                return
             }
+
+            var mutablePokemon = pokemon
+            do {
+                let colorData = try await service.fetch(ColorData.self, query: GraphQLQueries.getColor, variables: vars)
+                mutablePokemon.colorName = colorData.species?.first?.color?.name
+            } catch {
+                Log.error("colorData fetch failed: \(error)")
+            }
+
+            pageState = .success(mutablePokemon)
         } catch {
+            Log.error("fetch failed: \(error)")
             pageState = .failure(ViewError.unknown)
         }
     }
